@@ -7,7 +7,6 @@
 // Maximum period time (in us) that the Timer can support
 #define MAX_PERIOD_TIME 102261126
 
-#define TEST_WARNING
 //#define TEST_DEBUG
 
 void userUpdate() {
@@ -55,24 +54,27 @@ void stepInterrupt(){
   // Calculate Timer period
   timer_period = next_interval - TIMER_SETUP_TIME - step_time;
 
-  // Check if timer_period is less than 5us. Timer_period could have
-  // also gone into the negatives, so we also check for that
+  // Check if timer_period is less than 5us. Timer_period could
+  // also overflow into very high values, so we also check for that
   if (timer_period < 5 || timer_period >= MAX_PERIOD_TIME) {
-    #if defined(TEST_WARNING)
-    Serial.println("WARNING: Timer period is less than 5us");
-    printData(next_interval, step_time, timer_period);
-    #endif
     timer_period = 5;
   }
+
   #if defined(TEST_DEBUG)
   printData(next_interval, step_time, timer_period);
+  Timer3.stop();
+  return;
   #endif
 
-  //Timer3.stop();
+  // Single nop to make the step timing more accurate.
+  // I belive that it helps because it compensates for the limited
+  // resolution of the micros() function used to measure time above
+  __NOP();
+
   Timer3.start(timer_period);
 }
 
-#if defined(TEST_WARNING) || defined(TEST_DEBUG)
+#if defined(TEST_DEBUG)
 inline void printData(uint32_t next_interval, uint32_t step_time, uint32_t timer_period) {
   Serial.print("next_interval: "); Serial.println(next_interval);
   Serial.print("timer_setup_time: "); Serial.println(TIMER_SETUP_TIME);
