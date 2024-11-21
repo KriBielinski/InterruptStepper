@@ -19,13 +19,11 @@ public:
   // means that the engine should stop.
   virtual uint32_t getNextInterval();
 
-  // An interrupt function that performs the entire stepping logic. Can
-  // be called directly to immidietaly perform a step and begin the whole
-  // stepping logic.
+  // An interrupt function that performs the entire stepping logic.
   void stepInterrupt();
 
-  // Make a step and begin the whole stepping logic after specified time.
-  void start(uint32_t microseconds = 0UL);
+  // Make a step and begin the whole stepping logic.
+  void start();
 
   // Attach interrupt to the Timer
   void attachInterrupt(void (*isr)());

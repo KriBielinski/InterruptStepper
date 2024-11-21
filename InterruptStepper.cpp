@@ -64,24 +64,8 @@ void InterruptStepper::stepInterrupt() {
   _timer.start(_timer_period);
 }
 
-void InterruptStepper::start(uint32_t microseconds) {
-  // Stop any `stepInterrupt` that might be already scheduled
-  _timer.stop();
-  // If the argument is 0 then we perform a step immidietaly and begin
-  // the whole stepping logic
-  if ( microseconds == 0 ) {
-    return stepInterrupt();
-  }
-  // If the amount of time is less than the timer can support (which is 
-  // timer's setup time + timer's min. period time) than we wait that time
-  // using `delayMicroseconds()` function, after which we manually step and
-  // start the whole stepping logic
-  if ( microseconds <= TIMER_SETUP_TIME+MIN_PERIOD_TIME ) {
-    delayMicroseconds(microseconds);
-    return stepInterrupt();
-  }
-  // Otherwise just start the timer normally
-  _timer.start(microseconds - TIMER_SETUP_TIME);
+void InterruptStepper::start() {
+  return stepInterrupt();
 }
 
 void InterruptStepper::attachInterrupt(void (*isr)()) {
