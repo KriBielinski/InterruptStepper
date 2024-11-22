@@ -76,6 +76,16 @@ void InterruptStepper::detachInterrupt() {
   _timer.detachInterrupt();
 }
 
+// Stop the timer and detach the interrupt if the object is destroyed or
+// goes out of scope
+InterruptStepper::~InterruptStepper() {
+  // This NOP makes the Timer accurate. I don't know why, but without it
+  // the timing goes bonkers, even if the destructor is never actually called.
+  __NOP();
+  _timer.stop();
+  detachInterrupt();
+}
+
 #if defined(INTERRUPT_STEPPER_DEBUG)
 inline void printData(uint32_t next_interval, uint32_t step_time, uint32_t timer_period) {
   INTERRUPT_STEPPER_SERIAL.print("next_interval: ");

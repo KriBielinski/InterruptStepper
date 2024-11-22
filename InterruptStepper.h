@@ -30,6 +30,8 @@ public:
   // Detach interrupt from the Timer
   void detachInterrupt();
 
+  ~InterruptStepper();
+
 private:
   // The timer from the `DueTimer` library which performs the `stepInterrupt()`
   // method that runs the stepper.
