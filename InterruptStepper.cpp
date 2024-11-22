@@ -68,6 +68,10 @@ void InterruptStepper::start() {
   return stepInterrupt();
 }
 
+void InterruptStepper::stop() {
+  _timer.stop();
+}
+
 void InterruptStepper::attachInterrupt(void (*isr)()) {
   _timer.attachInterrupt(isr);
 }

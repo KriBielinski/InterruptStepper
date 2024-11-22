@@ -25,6 +25,9 @@ public:
   // Make a step and begin the whole stepping logic.
   void start();
 
+  // Stop the engine and the whole stepping logic.
+  void stop();
+
   // Attach interrupt to the Timer
   void attachInterrupt(void (*isr)());
   // Detach interrupt from the Timer
