@@ -2,7 +2,9 @@
 
 #define LED_PIN 13
 
-InterruptStepper stepper(LED_PIN, Timer3);
+void updateFunc() {}
+
+InterruptStepper stepper(LED_PIN, Timer3, updateFunc);
 
 void setup(){
   pinMode(LED_PIN, OUTPUT);

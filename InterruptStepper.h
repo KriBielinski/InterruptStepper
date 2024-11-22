@@ -9,10 +9,7 @@ public:
   // There are 9 timers defined in the `DueTimer` library and they are 
   // `DueTimer::Timer0` to `DueTimer::Timer8`. You can also call the static
   // method `DueTimer::getAvailable()` to automatically get an available timer.
-  InterruptStepper(uint8_t step_pin, DueTimer& timer);
-
-  // User defined actions to perform every step.
-  virtual void userUpdate();
+  InterruptStepper(uint8_t step_pin, DueTimer& timer, void (&update_func)());
 
   // Function which is called every step and returns the time period (in us)
   // to wait until the next step to happen. If the function returns 0, that 
@@ -41,6 +38,9 @@ protected:
   // The timer from the `DueTimer` library which performs the `stepInterrupt()`
   // method that runs the stepper.
   DueTimer& _timer;
+  // A function passed by the user that will be run every step (every time
+  // the timer runs a `stepInterrupt()` method).
+  void (&_update_func)();
 
 private:
   uint32_t _start_time;

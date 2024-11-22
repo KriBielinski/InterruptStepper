@@ -15,11 +15,8 @@
 // Maximum period time (in us) that the `DueTimer::Timer` can support
 #define MAX_PERIOD_TIME 102261126
 
-InterruptStepper::InterruptStepper(uint8_t step_pin, DueTimer& timer) 
-  : _step_pin(step_pin), _timer(timer) {}
-
-// Trivial definition. Can be overwritten.
-void InterruptStepper::userUpdate() {}
+InterruptStepper::InterruptStepper(uint8_t step_pin, DueTimer& timer, void (&update_func)()) 
+  : _step_pin(step_pin), _timer(timer), _update_func(update_func) {}
 
 // Trivial definition. Can and should be overwritten.
 uint32_t InterruptStepper::getNextInterval() { return 0; }
@@ -30,7 +27,7 @@ void InterruptStepper::stepInterrupt() {
 
   digitalWrite(_step_pin, HIGH);
 
-  userUpdate();
+  _update_func();
   _next_interval = getNextInterval();
 
   digitalWrite(_step_pin, LOW);
@@ -83,9 +80,6 @@ void InterruptStepper::detachInterrupt() {
 // Stop the timer and detach the interrupt if the object is destroyed or
 // goes out of scope
 InterruptStepper::~InterruptStepper() {
-  // This NOP makes the Timer accurate. I don't know why, but without it
-  // the timing goes bonkers, even if the destructor is never actually called.
-  __NOP();
   _timer.stop();
   detachInterrupt();
 }
