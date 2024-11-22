@@ -2,17 +2,13 @@
 
 #define LED_PIN 13
 
-InterruptStepper stepper_1(Timer3, LED_PIN);
-
-void interruptFunction() {
-  stepper_1.stepInterrupt();
-}
+InterruptStepper stepper(LED_PIN, Timer3);
 
 void setup(){
   pinMode(LED_PIN, OUTPUT);
   Serial.begin(9600);
 
-  stepper_1.attachInterrupt(interruptFunction);
+  stepper.attachInterrupt([](){ stepper.stepInterrupt(); });
 }
 
 void loop(){
@@ -22,7 +18,7 @@ void loop(){
   digitalWrite(LED_PIN, HIGH);
   digitalWrite(LED_PIN, LOW);
   
-  stepper_1.start();
+  stepper.start();
   
   delay(1000); //wait 1 seconds
   

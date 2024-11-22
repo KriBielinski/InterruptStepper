@@ -15,8 +15,8 @@
 // Maximum period time (in us) that the `DueTimer::Timer` can support
 #define MAX_PERIOD_TIME 102261126
 
-InterruptStepper::InterruptStepper(DueTimer& timer, uint8_t step_pin) 
-  : _timer(timer), _step_pin(step_pin) {}
+InterruptStepper::InterruptStepper(uint8_t step_pin, DueTimer& timer) 
+  : _step_pin(step_pin), _timer(timer) {}
 
 // Trivial definition. Can be overwritten.
 void InterruptStepper::userUpdate() {}

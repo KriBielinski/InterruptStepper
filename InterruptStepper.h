@@ -6,10 +6,10 @@
 class InterruptStepper {
 public:
   // The constctor where you need to manually provide an available timer.
-  // There are 9 timers difined in the `DueTimer` library and they are 
-  // `DueTimer::Timer0` - `DueTimer::Timer8`. You can also call the static
+  // There are 9 timers defined in the `DueTimer` library and they are 
+  // `DueTimer::Timer0` to `DueTimer::Timer8`. You can also call the static
   // method `DueTimer::getAvailable()` to automatically get an available timer.
-  InterruptStepper(DueTimer& timer, uint8_t step_pin);
+  InterruptStepper(uint8_t step_pin, DueTimer& timer);
 
   // User defined actions to perform every step.
   virtual void userUpdate();
@@ -35,13 +35,14 @@ public:
 
   ~InterruptStepper();
 
-private:
+protected:
+  // The stapper's step input pin. (Low to high transition means to step)
+  const uint8_t _step_pin;
   // The timer from the `DueTimer` library which performs the `stepInterrupt()`
   // method that runs the stepper.
   DueTimer& _timer;
-  // The stapper's step input pin. (Low to high transition means to step)
-  const uint8_t _step_pin;
 
+private:
   uint32_t _start_time;
   uint32_t _step_time;
   uint32_t _next_interval;
