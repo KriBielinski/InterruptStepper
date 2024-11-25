@@ -19,8 +19,9 @@ public:
   // An interrupt function that performs the entire stepping logic.
   void stepInterrupt();
 
-  // Make a step and begin the whole stepping logic.
-  void start();
+  // Make a step and begin the whole stepping logic, after the specified
+  // interval (in us)
+  void start(uint32_t interval = 0);
 
   // Stop the engine and the whole stepping logic.
   void stop();
@@ -46,7 +47,6 @@ private:
   uint32_t _start_time;
   uint32_t _step_time;
   uint32_t _next_interval;
-  uint32_t _timer_period;
 };
 
 #endif

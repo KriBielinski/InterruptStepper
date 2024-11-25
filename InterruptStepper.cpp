@@ -43,8 +43,12 @@ void InterruptStepper::stepInterrupt() {
   // Subtract 2us to compensate for how long measuring time itself took
   _step_time = micros() - _start_time - 2;
 
+  start( _next_interval - _step_time );
+}
+
+void InterruptStepper::start(uint32_t interval) {
   // Calculate Timer period
-  _timer_period = _next_interval - TIMER_SETUP_TIME - _step_time;
+  uint32_t _timer_period = interval - TIMER_SETUP_TIME;
 
   // Check if timer_period is less than MIN_PERIOD_TIME. Timer_period could
   // also overflow into very high values, so we also check for that
@@ -59,10 +63,6 @@ void InterruptStepper::stepInterrupt() {
   #endif
 
   _timer.start(_timer_period);
-}
-
-void InterruptStepper::start() {
-  return stepInterrupt();
 }
 
 void InterruptStepper::stop() {
