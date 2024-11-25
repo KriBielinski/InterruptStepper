@@ -5,7 +5,7 @@
 
 class InterruptStepper {
 public:
-  // The constctor where you need to manually provide an available timer.
+  // The constructor where you need to manually provide an available timer.
   // There are 9 timers defined in the `DueTimer` library and they are 
   // `DueTimer::Timer0` to `DueTimer::Timer8`. You can also call the static
   // method `DueTimer::getAvailable()` to automatically get an available timer.
