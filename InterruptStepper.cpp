@@ -15,17 +15,21 @@
 // Maximum period time (in us) that the `DueTimer::Timer` can support
 #define MAX_PERIOD_TIME 102261126
 
-InterruptStepper::InterruptStepper(uint8_t step_pin, DueTimer& timer, void (&update_func)()) 
-  : _step_pin(step_pin), _timer(timer), _update_func(update_func) {}
+InterruptStepper::InterruptStepper(uint8_t step_pin, uint8_t direction_pin, 
+                                  DueTimer& timer, void (&update_func)()) 
+  : AccelStepper(AccelStepper::DRIVER, step_pin, direction_pin), 
+    _step_pin(step_pin), _dir_pin(direction_pin), _timer(timer), _update_func(update_func) {}
 
-// Trivial definition. Can and should be overwritten.
-uint32_t InterruptStepper::getNextInterval() { return 0; }
 
 void InterruptStepper::stepInterrupt() {
   // Start measuring time
   _start_time = micros();
 
+  digitalWrite(_dir_pin, _direction);
+  
   digitalWrite(_step_pin, HIGH);
+
+  _direction == DIRECTION_CW ? _currentPos += 1 : _currentPos -= 1;
 
   _update_func();
   _next_interval = getNextInterval();
@@ -77,11 +81,32 @@ void InterruptStepper::detachInterrupt() {
   _timer.detachInterrupt();
 }
 
+bool InterruptStepper::direction() {
+  return _direction;
+}
+
 // Stop the timer and detach the interrupt if the object is destroyed or
 // goes out of scope
 InterruptStepper::~InterruptStepper() {
   _timer.stop();
   detachInterrupt();
+}
+
+uint32_t InterruptStepper::getNextInterval() { 
+  return AccelStepper::computeNewSpeed();
+}
+
+uint32_t InterruptStepper::computeNewSpeed() {
+  // Use the base method to compute the interval until the next step
+  uint32_t interval = AccelStepper::computeNewSpeed();
+  // How much time has passed already since the last step
+  uint32_t time_since_step = micros() - _start_time;
+  // We check whether the time since the last step is smaller than the interval.
+  // If so then we wait with the next an appropriate amount if time, otherwise
+  // we step immidietaly.
+  time_since_step < interval ? start( interval - time_since_step ) : start();
+  
+  return interval;
 }
 
 #if defined(INTERRUPT_STEPPER_DEBUG)
