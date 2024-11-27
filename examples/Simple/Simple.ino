@@ -1,4 +1,4 @@
-#include "InterruptStepper.h"
+#include <InterruptStepper.h>
 
 #define STEP_PIN 13
 #define DIR_PIN 12
@@ -18,9 +18,6 @@ void setup(){
 }
 
 void loop(){
-
-  
-  
   if(stepper.distanceToGo()==0) {
     if(stepper.currentPosition() >= 3000) {
       stepper.moveTo(0);
@@ -32,11 +29,8 @@ void loop(){
     }
   }
 
-delay(1000);
+  delay(1000);
 
-Serial.println(stepper.currentPosition());
-Serial.println(stepper.direction());
-
-  
-  
+  Serial.println(stepper.currentPosition());
+  Serial.println(stepper.direction());
 }
