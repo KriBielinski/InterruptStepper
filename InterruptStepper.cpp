@@ -1,13 +1,5 @@
 #include "InterruptStepper.h"
 
-// Get debugging information to the Serial output defined in 
-// INTERRUPT_STEPPER_SERIAL. Note that it will
-// interfere with the correct stepping of the InterruptStepper. Intended 
-// only as a developer tool.
-// #define INTERRUPT_STEPPER_DEBUG
-// #define INTERRUPT_STEPPER_SERIAL Serial
-
-
 // Time it takes (in us) for the `DueTimer::Timer` to actually start counting time
 #define TIMER_SETUP_TIME 8
 // Minimum period (in us) that the `DueTimer::Timer` can reliably operate on
@@ -26,6 +18,8 @@ void InterruptStepper::stepInterrupt() {
   _start_time = micros();
 
   digitalWrite(_dir_pin, _direction);
+
+  _timer.stop();
   
   digitalWrite(_step_pin, HIGH);
 
@@ -38,7 +32,6 @@ void InterruptStepper::stepInterrupt() {
 
   // If stepper should stop
   if (_next_interval == 0) {
-    _timer.stop();
     return;
   } 
 
@@ -59,12 +52,6 @@ void InterruptStepper::start(uint32_t interval) {
   if (_timer_period < MIN_PERIOD_TIME || _timer_period >= MAX_PERIOD_TIME) {
     _timer_period = MIN_PERIOD_TIME;
   }
-
-  #if defined(INTERRUPT_STEPPER_DEBUG)
-  printData(_next_interval, _step_time, _timer_period);
-  _timer.stop();
-  return;
-  #endif
 
   _timer.start(_timer_period);
 }
@@ -108,17 +95,3 @@ uint32_t InterruptStepper::computeNewSpeed() {
   
   return interval;
 }
-
-#if defined(INTERRUPT_STEPPER_DEBUG)
-inline void printData(uint32_t next_interval, uint32_t step_time, uint32_t timer_period) {
-  INTERRUPT_STEPPER_SERIAL.print("next_interval: ");
-  INTERRUPT_STEPPER_SERIAL.println(next_interval);
-  INTERRUPT_STEPPER_SERIAL.print("timer_setup_time: ");
-  INTERRUPT_STEPPER_SERIAL.println(TIMER_SETUP_TIME);
-  INTERRUPT_STEPPER_SERIAL.print("step_time: ");
-  INTERRUPT_STEPPER_SERIAL.println(step_time);
-  INTERRUPT_STEPPER_SERIAL.print("timer_period: ");
-  INTERRUPT_STEPPER_SERIAL.println(timer_period);
-  INTERRUPT_STEPPER_SERIAL.println();
-}
-#endif
