@@ -1,10 +1,10 @@
 #include "InterruptStepper.h"
 
-// Time it takes (in us) for the `DueTimer::Timer` to actually start counting time
+// Time it takes (in μs) for the `DueTimer::Timer` to actually start counting time
 #define TIMER_SETUP_TIME 8
-// Minimum period (in us) that the `DueTimer::Timer` can reliably operate on
+// Minimum period (in μs) that the `DueTimer::Timer` can reliably operate on
 #define MIN_PERIOD_TIME 5
-// Maximum period time (in us) that the `DueTimer::Timer` can support
+// Maximum period time (in μs) that the `DueTimer::Timer` can support
 #define MAX_PERIOD_TIME 102261126
 
 InterruptStepper::InterruptStepper(uint8_t step_pin, uint8_t direction_pin, 
@@ -18,12 +18,13 @@ void InterruptStepper::stepInterrupt() {
   _start_time = micros();
 
   digitalWrite(_dir_pin, _direction);
-
-  _timer.stop();
   
+  _timer.stop();
+
   digitalWrite(_step_pin, HIGH);
 
-  _direction == DIRECTION_CW ? _currentPos += 1 : _currentPos -= 1;
+  // Update the internal `AccelStepper::_currentPos` variable
+  _direction == DIRECTION_CW ? stepForward() : stepBackward();
 
   _update_func();
   _next_interval = getNextInterval();
@@ -37,7 +38,7 @@ void InterruptStepper::stepInterrupt() {
 
   // Measure how long the stepper's step took
   // Calculation works correctly even if micros() overflows
-  // Subtract 2us to compensate for how long measuring time itself took
+  // Subtract 2μs to compensate for how long measuring time itself took
   _step_time = micros() - _start_time - 2;
 
   start( _next_interval - _step_time );
@@ -95,3 +96,5 @@ uint32_t InterruptStepper::computeNewSpeed() {
   
   return interval;
 }
+
+void InterruptStepper::step(long step) {}

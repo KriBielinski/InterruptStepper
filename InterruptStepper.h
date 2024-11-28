@@ -17,7 +17,7 @@ public:
   void stepInterrupt();
 
   // Make a step and begin the whole stepping logic, after the specified
-  // interval (in us)
+  // interval (in μs)
   void start(uint32_t interval = 0);
 
   // Stop the engine and the whole stepping logic.
@@ -44,7 +44,7 @@ protected:
   // the timer runs a `stepInterrupt()` method).
   void (&_update_func)();
 
-  // Function which is called every step and returns the time period (in us)
+  // Function which is called every step and returns the time period (in μs)
   // to wait until the next step to happen. If the function returns 0, that 
   // means that the engine should stop.
   virtual uint32_t getNextInterval();
@@ -53,6 +53,10 @@ protected:
   // interrupt capabilities of this class. This method calculates how much
   // time to wait until the next step is due.
   uint32_t computeNewSpeed() override;
+
+  // Set to empty method to enable the use of `stepForward()` and 
+  // `stepBackward()` methods without any issues
+  void step(long step) override;
 
 private:
   // The stapper's step input pin. (Low to high transition means to step)
