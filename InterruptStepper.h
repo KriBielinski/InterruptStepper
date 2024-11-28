@@ -30,8 +30,8 @@ public:
 
   // Returnes the direction the motor is currently spinning in. Value of 1
   // means clockwise. You can also use `AccelStepper::Direction` enum to
-  // compare the output of this function to. If the motor is stationary, then
-  // the output of this function is undefined.
+  // compare the output of this method to. If the motor is stationary, then
+  // the output of this method is undefined.
   bool direction();
 
   ~InterruptStepper();
@@ -44,8 +44,8 @@ protected:
   // the timer runs a `stepInterrupt()` method).
   void (&_update_func)();
 
-  // Function which is called every step and returns the time period (in μs)
-  // to wait until the next step to happen. If the function returns 0, that 
+  // Method which is called every step and returns the time period (in μs)
+  // to wait until the next step should occur. If the method returns 0, that 
   // means that the engine should stop.
   virtual uint32_t getNextInterval();
 
@@ -55,13 +55,13 @@ protected:
   uint32_t computeNewSpeed() override;
 
   // Set to empty method to enable the use of `stepForward()` and 
-  // `stepBackward()` methods without any issues
+  // `stepBackward()` methods without any issues.
   void step(long step) override;
 
 private:
-  // The stapper's step input pin. (Low to high transition means to step)
+  // The stepper's step input pin. (Low to high transition means to step)
   const uint8_t _step_pin;
-  // The stapper's step input pin. (Low to high transition means to step)
+  // The stepper's direction input pin. (High means forward)
   const uint8_t _dir_pin;
   // Time at which the last step occured
   uint32_t _start_time = 0;
