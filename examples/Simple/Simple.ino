@@ -1,3 +1,8 @@
+// Simple.ino
+//
+// A simple example that shows how to set up the InterruptStepper
+// and how to use it. 
+
 #include <InterruptStepper.h>
 
 #define STEP_PIN 13
@@ -7,8 +12,7 @@ void updateFunc() {}
 
 InterruptStepper stepper(STEP_PIN, DIR_PIN, Timer3, updateFunc);
 
-void setup(){
-  pinMode(STEP_PIN, OUTPUT);
+void setup() {
   Serial.begin(9600);
 
   stepper.attachInterrupt([](){ stepper.stepInterrupt(); });
@@ -17,7 +21,8 @@ void setup(){
   stepper.setAcceleration(50);
 }
 
-void loop(){
+void loop() {
+  // Move the stepper constantly between the positions 0 and 3000
   if(stepper.distanceToGo()==0) {
     if(stepper.currentPosition() >= 3000) {
       stepper.moveTo(0);
@@ -29,6 +34,7 @@ void loop(){
     }
   }
 
+  // The stepper will work correctly even if we put delay in the main loop
   delay(1000);
 
   Serial.println(stepper.currentPosition());
