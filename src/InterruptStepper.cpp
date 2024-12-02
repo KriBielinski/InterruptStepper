@@ -1,3 +1,13 @@
+/*
+  InterruptStepper.cpp - A stepper library designed for the Arduino Due board
+  that can run a stepper motor(s) using timer interrupts.
+
+  Copyright (C) 2024 Krzysztof Bieliński
+
+  Licensed under GPLv3. For instructions and additional information go to
+  https://github.com/KriBielinski/InterruptStepper
+*/
+
 #include "InterruptStepper.h"
 
 // Time it takes (in μs) for the `DueTimer::Timer` to actually start counting time
@@ -8,7 +18,7 @@
 #define MAX_PERIOD_TIME 102261126
 
 InterruptStepper::InterruptStepper(uint8_t step_pin, uint8_t direction_pin, 
-                                  DueTimer& timer, void (&update_func)()) 
+                                  PrecDueTimer& timer, void (&update_func)()) 
   : AccelStepper(AccelStepper::DRIVER, step_pin, direction_pin), 
     _step_pin(step_pin), _dir_pin(direction_pin), _timer(timer), _update_func(update_func) {}
 

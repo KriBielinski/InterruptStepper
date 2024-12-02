@@ -1,7 +1,17 @@
+/*
+  InterruptStepper.h - A stepper library designed for the Arduino Due board
+  that can run a stepper motor(s) using timer interrupts.
+
+  Copyright (C) 2024 Krzysztof Bieliński
+
+  Licensed under GPLv3. For instructions and additional information go to
+  https://github.com/KriBielinski/InterruptStepper
+*/
+
 #ifndef INTERRUPT_STEPPER_H
 #define INTERRUPT_STEPPER_H
 
-#include <DueTimer.h>
+#include <PrecDueTimer.h>
 #include <AccelStepper.h>
 
 class InterruptStepper : public AccelStepper {
@@ -11,7 +21,7 @@ public:
   // `DueTimer::Timer0` to `DueTimer::Timer8`. You can also call the static
   // method `DueTimer::getAvailable()` to automatically get an available timer.
   InterruptStepper(uint8_t step_pin, uint8_t direction_pin, 
-                   DueTimer& timer, void (&update_func)());
+                   PrecDueTimer& timer, void (&update_func)());
 
   // An interrupt function that performs the entire stepping logic.
   void stepInterrupt();
@@ -39,7 +49,7 @@ public:
 protected:
   // The timer from the `DueTimer` library which performs the `stepInterrupt()`
   // method that runs the stepper.
-  DueTimer& _timer;
+  PrecDueTimer& _timer;
   // A function passed by the user that will be run every step (every time
   // the timer runs a `stepInterrupt()` method).
   void (&_update_func)();

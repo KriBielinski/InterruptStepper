@@ -1,0 +1,9 @@
+InterruptStepper	KEYWORD1
+
+stepInterrupt	KEYWORD2
+start	KEYWORD2
+stop	KEYWORD2
+attachInterrupt	KEYWORD2
+detachInterrupt KEYWORD2
+direction KEYWORD2
+getNextInterval KEYWORD2
