@@ -14,7 +14,7 @@ class MaxFreqTest : public InterruptStepper {
 public:
   // Just invoke the base constructor
   MaxFreqTest(uint8_t step_pin, uint8_t direction_pin, 
-                   DueTimer& timer, void (&update_func)())
+                   PrecDueTimer& timer, void (&update_func)())
     : InterruptStepper(step_pin, direction_pin, timer, update_func) {}
 
 protected:
