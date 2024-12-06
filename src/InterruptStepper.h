@@ -20,8 +20,18 @@ public:
   // There are 9 timers defined in the `DueTimer` library and they are 
   // `DueTimer::Timer0` to `DueTimer::Timer8`. You can also call the static
   // method `DueTimer::getAvailable()` to automatically get an available timer.
-  InterruptStepper(uint8_t step_pin, uint8_t direction_pin, 
-                   PrecDueTimer& timer, void (&update_func)());
+  InterruptStepper(PrecDueTimer& timer, void (&update_func)(), 
+                  uint8_t interface = InterruptStepper::FULL4WIRE, 
+                  uint8_t pin1 = 2, 
+                  uint8_t pin2 = 3, 
+                  uint8_t pin3 = 4, 
+                  uint8_t pin4 = 5, 
+                  bool enable = true);
+  
+  // The constructor in which you can provide your own implementation of
+  // forward and backward steps.
+  InterruptStepper(PrecDueTimer& timer, void (&update_func)(),
+                  void (*forward)(), void (*backward)());
 
   // An interrupt function that performs the entire stepping logic.
   void stepInterrupt();
@@ -29,9 +39,6 @@ public:
   // Make a step and begin the whole stepping logic, after the specified
   // interval (in μs)
   void start(uint32_t interval = 0);
-
-  // Stop the engine and the whole stepping logic.
-  void stop();
 
   // Attach interrupt to the Timer
   void attachInterrupt(void (*isr)());
@@ -43,6 +50,11 @@ public:
   // compare the output of this method to. If the motor is stationary, then
   // the output of this method is undefined.
   bool direction();
+
+  // Method overridden from the AccelStepper library to make sure that it
+  // doesn't interfere with the motor when the user accidentally calls this
+  // method.
+  bool run();
 
   ~InterruptStepper();
 
@@ -64,15 +76,7 @@ protected:
   // time to wait until the next step is due.
   uint32_t computeNewSpeed() override;
 
-  // Set to empty method to enable the use of `stepForward()` and 
-  // `stepBackward()` methods without any issues.
-  void step(long step) override;
-
 private:
-  // The stepper's step input pin. (Low to high transition means to step)
-  const uint8_t _step_pin;
-  // The stepper's direction input pin. (High means forward)
-  const uint8_t _dir_pin;
   // Time at which the last step occured
   uint32_t _start_time = 0;
   // How long the step itself took

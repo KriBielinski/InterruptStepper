@@ -10,7 +10,7 @@
 
 void updateFunc() {}
 
-InterruptStepper stepper(STEP_PIN, DIR_PIN, Timer3, updateFunc);
+InterruptStepper stepper(Timer3, updateFunc, InterruptStepper::DRIVER, STEP_PIN, DIR_PIN);
 
 void setup() {
   Serial.begin(9600);

@@ -17,29 +17,33 @@
 // Maximum period time (in μs) that the `DueTimer::Timer` can support
 #define MAX_PERIOD_TIME 102261126
 
-InterruptStepper::InterruptStepper(uint8_t step_pin, uint8_t direction_pin, 
-                                  PrecDueTimer& timer, void (&update_func)()) 
-  : AccelStepper(AccelStepper::DRIVER, step_pin, direction_pin), 
-    _step_pin(step_pin), _dir_pin(direction_pin), _timer(timer), _update_func(update_func) {}
+InterruptStepper::InterruptStepper(PrecDueTimer& timer, void (&update_func)(), 
+                  uint8_t interface, 
+                  uint8_t pin1, 
+                  uint8_t pin2, 
+                  uint8_t pin3, 
+                  uint8_t pin4, 
+                  bool enable) 
+  : AccelStepper(interface, pin1, pin2, pin3, pin4, enable), 
+    _timer(timer), _update_func(update_func) {}
+
+InterruptStepper::InterruptStepper(PrecDueTimer &timer, void (&update_func)(), 
+                  void (*forward)(), void (*backward)())
+  : AccelStepper(forward, backward), 
+    _timer(timer), _update_func(update_func) {}
 
 
 void InterruptStepper::stepInterrupt() {
   // Start measuring time
   _start_time = micros();
-
-  digitalWrite(_dir_pin, _direction);
   
-  _timer.stop();
+  //_timer.stop();
 
-  digitalWrite(_step_pin, HIGH);
-
-  // Update the internal `AccelStepper::_currentPos` variable
+  // Step engine forward or backward depending on the stepper's direction
   _direction == DIRECTION_CW ? stepForward() : stepBackward();
 
   _update_func();
   _next_interval = getNextInterval();
-
-  digitalWrite(_step_pin, LOW);
 
   // If the stepper should stop
   if (_next_interval == 0) {
@@ -66,10 +70,6 @@ void InterruptStepper::start(uint32_t interval) {
   _timer.start(_timer_period);
 }
 
-void InterruptStepper::stop() {
-  _timer.stop();
-}
-
 void InterruptStepper::attachInterrupt(void (*isr)()) {
   _timer.attachInterrupt(isr);
 }
@@ -80,6 +80,10 @@ void InterruptStepper::detachInterrupt() {
 
 bool InterruptStepper::direction() {
   return _direction;
+}
+
+bool InterruptStepper::run() {
+  return AccelStepper::isRunning();
 }
 
 // Stop the timer and detach the interrupt if the object is destroyed or
@@ -105,5 +109,3 @@ uint32_t InterruptStepper::computeNewSpeed() {
   
   return interval;
 }
-
-void InterruptStepper::step(long step) {}
