@@ -23,15 +23,13 @@ void setup() {
 
 void loop() {
   // Move the stepper constantly between the positions 0 and 3000
-  if(stepper.distanceToGo()==0) {
-    if(stepper.currentPosition() >= 3000) {
-      stepper.moveTo(0);
-      Serial.println("Move to 0");
-    }
-    else {
-      stepper.moveTo(3000);
-      Serial.println("Move to 3000");
-    }
+  if(stepper.currentPosition() <= 0) {
+    stepper.moveTo(3000);
+    Serial.println("Move to 3000");
+  }
+  if(stepper.currentPosition() >= 3000) {
+    stepper.moveTo(0);
+    Serial.println("Move to 0");
   }
 
   // The stepper will work correctly even if we put delay in the main loop
