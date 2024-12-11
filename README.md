@@ -135,6 +135,21 @@ Below is a list of all the methods available in the InterruptStepper library and
   - `bool direction()` - Returnes the direction the motor is currently spinning in. Value of 1 means clockwise. If the motor is stationary, then
   the output of this method is undefined.
 
+<br/>
+
+> [!WARNING]
+> The following methods from the original AccelStepper library do not work and should **NOT** be used:
+>
+> - `bool run()`
+> - `bool runSpeed()`
+> - `void setSpeed()`
+> - `void runToPosition()`
+> - `bool runSpeedToPosition(long position)`
+> - `void runToNewPosition(long position)`
+
+<br/>
+
+
 ## Miscellaneous information
 
 - The InterruptStepper library provides a protected virtual method `uint32_t getNextInterval()` that is used internally to time steps.
