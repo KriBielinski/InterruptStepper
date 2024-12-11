@@ -47,6 +47,7 @@ void InterruptStepper::stepInterrupt() {
 
   // If the stepper should stop
   if (_next_interval == 0) {
+    _timer.stop();
     return;
   } 
 
