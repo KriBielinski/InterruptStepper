@@ -12,7 +12,7 @@
 #define INTERRUPT_STEPPER_H
 
 #include <PrecDueTimer.h>
-#include <AccelStepper.h>
+#include "AccelStepper/AccelStepper.h"
 
 class InterruptStepper : public AccelStepper {
 public:
