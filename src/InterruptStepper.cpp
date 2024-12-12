@@ -87,6 +87,68 @@ bool InterruptStepper::run() {
   return AccelStepper::isRunning();
 }
 
+void InterruptStepper::moveTo(long absolute) {
+  if (_targetPos != absolute) {
+    // Stop currently scheduled interrupts if max_speed needs to change
+    _timer.stop();
+    // Then perform calculations as normal
+    _targetPos = absolute;
+    computeNewSpeed();
+    // compute new n?
+  }
+}
+
+void InterruptStepper::move(long relative) {
+  moveTo(_currentPos + relative);
+}
+
+void InterruptStepper::setMaxSpeed(float speed) {
+  if (speed < 0.0)
+    speed = -speed;
+  if (_maxSpeed != speed) {
+    // Stop currently scheduled interrupts if max_speed needs to change
+    _timer.stop();
+    // Then perform calculations as normal
+    _maxSpeed = speed;
+    _cmin = 1000000.0 / speed;
+    // Recompute _n from current speed and adjust speed if accelerating or cruising
+    if (_n > 0) {
+      _n = (long)((_speed * _speed) / (2.0 * _acceleration)); // Equation 16
+      //computeNewSpeed();
+    }
+    // Moved this line from above to here
+    computeNewSpeed();
+  }
+}
+
+void InterruptStepper::setAcceleration(float acceleration) {
+  if (acceleration == 0.0)
+	  return;
+  if (acceleration < 0.0)
+    acceleration = -acceleration;
+  if (_acceleration != acceleration) {
+    // Stop currently scheduled interrupts if max_speed needs to change
+    _timer.stop();
+    // Then perform calculations as normal
+    // Recompute _n per Equation 17
+    _n = _n * (_acceleration / acceleration);
+    // New c0 per Equation 7, with correction per Equation 15
+    _c0 = 0.676 * sqrt(2.0 / acceleration) * 1000000.0; // Equation 15
+    _acceleration = acceleration;
+    computeNewSpeed();
+  }
+}
+
+void InterruptStepper::stop() {
+  if (_speed != 0.0) {    
+	  long stepsToStop = (long)((_speed * _speed) / (2.0 * _acceleration)) + 1; // Equation 16 (+integer rounding)
+	  if (_speed > 0)
+	    move(stepsToStop);
+	  else
+	    move(-stepsToStop);
+  }
+}
+
 // Stop the timer and detach the interrupt if the object is destroyed or
 // goes out of scope
 InterruptStepper::~InterruptStepper() {

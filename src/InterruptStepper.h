@@ -56,6 +56,16 @@ public:
   // method.
   bool run();
 
+  // Below are methods overriden from the AccelStepper library that need to
+  // stop currently scheduled interrupts before doing their own calculations
+  // so that no race conditions occur.
+
+  void moveTo(long absolute);
+  void move(long relative);
+  void setMaxSpeed(float speed);
+  void setAcceleration(float acceleration);
+  void stop();
+
   ~InterruptStepper();
 
 protected:
