@@ -656,18 +656,6 @@ protected:
     /// 0 means the motor is currently stopped with _speed == 0
     unsigned long  _stepInterval;
 
-private:
-    /// Number of pins on the stepper motor. Permits 2 or 4. 2 pins is a
-    /// bipolar, and 4 pins is a unipolar.
-    uint8_t        _interface;          // 0, 1, 2, 4, 8, See MotorInterfaceType
-
-    /// Arduino pin number assignments for the 2 or 4 pins required to interface to the
-    /// stepper motor or driver
-    uint8_t        _pin[4];
-
-    /// Whether the _pins is inverted or not
-    uint8_t        _pinInverted[4];
-
     /// The current absolution position in steps.
     long           _currentPos;    // Steps
 
@@ -686,6 +674,31 @@ private:
     /// The acceleration to use to accelerate or decelerate the motor in steps
     /// per second per second. Must be > 0
     float          _acceleration;
+
+    /// The step counter for speed calculations
+    long _n;
+
+    /// Initial step size in microseconds
+    float _c0;
+
+    /// Last step size in microseconds
+    float _cn;
+
+    /// Min step size in microseconds based on maxSpeed
+    float _cmin; // at max speed
+
+private:
+    /// Number of pins on the stepper motor. Permits 2 or 4. 2 pins is a
+    /// bipolar, and 4 pins is a unipolar.
+    uint8_t        _interface;          // 0, 1, 2, 4, 8, See MotorInterfaceType
+
+    /// Arduino pin number assignments for the 2 or 4 pins required to interface to the
+    /// stepper motor or driver
+    uint8_t        _pin[4];
+
+    /// Whether the _pins is inverted or not
+    uint8_t        _pinInverted[4];
+
     float          _sqrt_twoa; // Precomputed sqrt(2*_acceleration)
 
     /// The last step time in microseconds
@@ -711,18 +724,6 @@ private:
 
     /// The pointer to a backward-step procedure
     void (*_backward)();
-
-    /// The step counter for speed calculations
-    long _n;
-
-    /// Initial step size in microseconds
-    float _c0;
-
-    /// Last step size in microseconds
-    float _cn;
-
-    /// Min step size in microseconds based on maxSpeed
-    float _cmin; // at max speed
 
 };
 
